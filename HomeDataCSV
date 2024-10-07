@@ -1,0 +1,244 @@
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class HomeDataCSV {
+
+    private static final String CSV_FILE = "home_data.csv";
+    private static final NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance();
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        List<HomeData> homes = new ArrayList<>();
+
+        int choice;
+        do {
+            displayMenu();
+            choice = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choice) {
+                case 1:
+                    homes.add(getHomeDataFromUser(scanner));
+                    break;
+                case 2:
+                    saveHomeDataToCSV(homes);
+                    break;
+                case 3:
+                    modifyHomeData(homes, scanner);
+                    break;
+                case 4:
+                    printAllHomes(homes);
+                    break;
+                case 5:
+                    System.out.println("Exiting...");
+                    break;
+                default:
+                    System.out.println("Please try again.");
+            }
+
+        } while (choice != 5);
+
+        scanner.close();
+    }
+
+    private static void displayMenu() {
+        System.out.println("\nMenu:");
+        System.out.println("1. Input Home Data");
+        System.out.println("2. Save to CSV");
+        System.out.println("3. Modify Home Data");
+        System.out.println("4. Print All Homes");
+        System.out.println("5. Exit");
+        System.out.print("Enter your choice: ");
+    }
+
+    private static HomeData getHomeDataFromUser(Scanner scanner) {
+        System.out.println("Enter Home Details:");
+
+        System.out.print("Model: ");
+        String model = scanner.nextLine();
+
+        System.out.print("Address: ");
+        String address = scanner.nextLine();
+
+        System.out.print("City: ");
+        String city = scanner.nextLine();
+
+        System.out.print("State: ");
+        String state = scanner.nextLine();
+
+        System.out.print("Zip: ");
+        String zip = scanner.nextLine();
+
+        System.out.print("Tax Assessment Value: ");
+        double taxAssessmentValue = scanner.nextDouble();
+        scanner.nextLine();
+
+        System.out.print("Square footage: ");
+        int sqFt = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.print("Year Built: ");
+        int yearBuilt = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.print("Housing Tract: ");
+        String housingTract = scanner.nextLine();
+
+        return new HomeData(model, address, city, state, zip, taxAssessmentValue, sqFt, yearBuilt, housingTract);
+    }
+
+    private static void saveHomeDataToCSV(List<HomeData> homes) {
+        try (FileWriter writer = new FileWriter(CSV_FILE)) {
+
+            writer.append("model,address,city,state,zip,taxAssessmentValue,buildCost,yearBuilt,housingTract\n");
+
+
+            for (HomeData home : homes) {
+                writer.append(home.toCSVString()).append("\n");
+            }
+
+            System.out.println("Home data saved to CSV successfully!");
+        } catch (IOException e) {
+            System.out.println("Error saving to CSV: " + e.getMessage());
+        }
+    }
+
+    private static void printAllHomes(List<HomeData> homes) {
+        if (homes.isEmpty()) {
+            System.out.println("No home data found.");
+            return;
+        }
+
+        System.out.println("\nAll Homes:");
+        for (HomeData home : homes) {
+            System.out.println("Model: " + home.getModel());
+            System.out.println("Address: " + home.getAddress());
+            System.out.println("City: " + home.getCity());
+            System.out.println("State: " + home.getState());
+            System.out.println("Zip: " + home.getZip());
+            System.out.println("Tax Assessment Value: " + currencyFormatter.format(home.getTaxAssessmentValue()));
+            System.out.println("Square Footage: " + home.getsqFt());
+            System.out.println("Year Built: " + home.getYearBuilt());
+            System.out.println("Housing Tract: " + home.getHousingTract());
+            System.out.println("--------------------");
+        }
+    }
+
+    private static void printHomeData(HomeData home) {
+        System.out.println("Model: " + home.getModel());
+        System.out.println("Address: " + home.getAddress());
+        System.out.println("City: " + home.getCity());
+        System.out.println("State: " + home.getState());
+        System.out.println("Zip: " + home.getZip());
+        System.out.println("Tax Assessment Value: " + currencyFormatter.format(home.getTaxAssessmentValue()));
+        System.out.println("Square Footage: " + home.getsqFt());
+        System.out.println("Year Built: " + home.getYearBuilt());
+        System.out.println("Housing Tract: " + home.getHousingTract());
+    }
+
+    private static void modifyHomeData(List<HomeData> homes, Scanner scanner) {
+        if (homes.isEmpty()) {
+            System.out.println("No home data to modify.");
+            return;
+        }
+
+        System.out.print("Enter the address of the home to modify: ");
+        String addressToModify = scanner.nextLine();
+
+
+        HomeData homeToModify = null;
+        for (HomeData home : homes) {
+            if (home.getAddress().equalsIgnoreCase(addressToModify)) {
+                homeToModify = home;
+                break;
+            }
+        }
+
+        if (homeToModify == null) {
+            System.out.println("Home not found.");
+            return;
+        }
+
+
+        System.out.println("Current Home Data:");
+        printHomeData(homeToModify);
+
+        System.out.println("\nEnter new values (leave blank to keep existing values):");
+
+        System.out.print("Model: ");
+        String newModel = scanner.nextLine();
+        if (!newModel.isEmpty()) {
+            homeToModify.setModel(newModel);
+        }
+
+        System.out.print("Address: ");
+        String newAddress = scanner.nextLine();
+        if (!newAddress.isEmpty()) {
+            homeToModify.setAddress(newAddress);
+        }
+
+        System.out.print("City: ");
+        String newCity = scanner.nextLine();
+        if (!newCity.isEmpty()) {
+            homeToModify.setCity(newCity);
+        }
+
+        System.out.print("State: ");
+        String newState = scanner.nextLine();
+        if (!newState.isEmpty()) {
+            homeToModify.setState(newState);
+        }
+
+        System.out.print("Zip: ");
+        String newZip = scanner.nextLine();
+        if (!newZip.isEmpty()) {
+            homeToModify.setZip(newZip);
+        }
+
+        System.out.print("Tax Assessment Value: ");
+        String taxAssessmentValueStr = scanner.nextLine();
+        if (!taxAssessmentValueStr.isEmpty()) {
+            try {
+                double newTaxAssessmentValue = Double.parseDouble(taxAssessmentValueStr);
+                homeToModify.setTaxAssessmentValue(newTaxAssessmentValue);
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a number.");
+            }
+        }
+
+        System.out.print("Square Footage: ");
+        String sqFtStr = scanner.nextLine();
+        if (!sqFtStr.isEmpty()) {
+            try {
+                int newsqFt =  Integer.parseInt(sqFtStr);
+                homeToModify.setsqFt(newsqFt);
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a number.");
+            }
+        }
+
+        System.out.print("Year Built: ");
+        String yearBuiltStr = scanner.nextLine();
+        if (!yearBuiltStr.isEmpty()) {
+            try {
+                int newYearBuilt = Integer.parseInt(yearBuiltStr);
+                homeToModify.setYearBuilt(newYearBuilt);
+            } catch (NumberFormatException e) {
+                System.out.println("You must enter an integer.");
+            }
+        }
+
+        System.out.print("Housing Tract: ");
+        String newHousingTract = scanner.nextLine();
+        if (!newHousingTract.isEmpty()) {
+            homeToModify.setHousingTract(newHousingTract);
+        }
+
+        System.out.println("Home data modified successfully!");
+    }
+}
